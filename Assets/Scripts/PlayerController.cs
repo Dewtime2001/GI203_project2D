@@ -16,7 +16,7 @@ public class PlayerController : MonoBehaviour
     private CircleCollider2D cc;
 
     private float cicumference;
-    private bool isGrounded;
+    private bool isGrounded = true;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -64,9 +64,13 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
-        if (!isGrounded) return;
-        List<ContactPoint2D> contacts = new List<ContactPoint2D>();
-        cc.GetContacts(contacts);
-        rb.velocity += contacts[0].normal * jumpSpeed;
+        if (!isGrounded) 
+        {
+            List<ContactPoint2D> contacts = new List<ContactPoint2D>();
+            cc.GetContacts(contacts);
+            rb.velocity += contacts[0].normal * jumpSpeed;
+            
+        }
     }
+
 }
