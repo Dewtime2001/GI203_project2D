@@ -6,12 +6,14 @@ using UnityEngine;
 public class Door : MonoBehaviour
 {
     public GameObject door;
+    public GameObject PauseEnd;
 
     private void OnTriggerEnter2D(Collider2D collision)
     { 
         if (collision.gameObject.CompareTag("Player"))
         {
-            SceneManager.LoadScene("End");
+            PauseEnd.SetActive(true);
+            Time.timeScale = 0;
         }
     }
 }

@@ -5,53 +5,52 @@ using UnityEngine;
 
 public class ShootPJ : MonoBehaviour
 {
-    public GameObject Player;
     public Transform shootPoint;
-    public Rigidbody2D CannonBall;
-    public GameObject Bullet;
+    public Rigidbody2D cannonBallPrefab;
+    public float shootingCooldown = 3f;
+    public float projectileTimeToTarget = 1f;
+    public float shootingRange = 28f;
 
+    private GameObject player;
     private float timer;
 
     void Start()
     {
-        Player = GameObject.FindGameObjectWithTag("Player");
+        player = GameObject.FindGameObjectWithTag("Player");
     }
 
     void Update()
     {
-        float distance = Vector2.Distance(transform.position, Player.transform.position);
+        if (player == null) return;
 
-        if (distance < 28)
+        float distance = Vector2.Distance(transform.position, player.transform.position);
+
+        if (distance < shootingRange)
         {
             timer += Time.deltaTime;
-            
-            if (timer > 3)
+
+            if (timer >= shootingCooldown)
             {
-                timer = 0;
-                shoot();
+                timer = 0f;
+                Shoot();
             }
         }
     }
 
-    void shoot()
+    void Shoot()
     {
-        Vector2 projectileVelocity = CalculateProjectileVelocity(shootPoint.position, Player.transform.position, 1f);
-        Rigidbody2D fireBullet = Instantiate(CannonBall, shootPoint.position, Quaternion.identity);
-        fireBullet.velocity = projectileVelocity;
+        Vector2 velocity = CalculateProjectileVelocity(shootPoint.position, player.transform.position, projectileTimeToTarget);
+        Rigidbody2D cannonBall = Instantiate(cannonBallPrefab, shootPoint.position, Quaternion.identity);
+        cannonBall.linearVelocity = velocity;
     }
 
     Vector2 CalculateProjectileVelocity(Vector2 origin, Vector2 target, float time)
     {
-        Vector2 distanc = target - origin;
+        Vector2 displacement = target - origin;
 
-        float disX = distanc.x;
-        float disY = distanc.y;
+        float vx = displacement.x / time;
+        float vy = displacement.y / time + 0.5f * Mathf.Abs(Physics2D.gravity.y) * time;
 
-        float velocityX = disX / time;
-        float velocityY = disY / time + 0.5f * Mathf.Abs(Physics2D.gravity.y) * time;
-
-        Vector2 result = new Vector2(velocityX, velocityY);
-
-        return result;
+        return new Vector2(vx, vy);
     }
 }
